@@ -1,50 +1,5 @@
 import { UnicodeMapping } from "./constants";
-import type { Templates, UnicodeMap } from "./types";
-
-// Sample templates
-export const sampleTemplates: Templates = {
-  announcement: `# 🚀 Exciting News!
-
-I'm thrilled to announce that **[Your Achievement]**
-
-**Key highlights:**
-• Achievement 1
-• Achievement 2  
-• Achievement 3
-
-*Thank you* to everyone who supported this journey!
-
-#achievement #milestone #grateful`,
-
-  tip: `💡 **Pro Tip:** [Your main tip]
-
-Here's what I've learned:
-
-• **Point 1:** Explanation
-• **Point 2:** Explanation  
-• **Point 3:** Explanation
-
-*What's your experience with this?* Drop a comment below! 👇
-
-#tips #learning #growth`,
-
-  story: `📖 **Story time:** [Brief hook]
-
-**The challenge:**
-[Describe the problem]
-
-**The solution:**
-[What you did]
-
-**The result:**
-[Impact and outcome]
-
-**Key takeaway:** _[Main lesson learned]_
-
-What challenges are you facing? Let's discuss! 💬
-
-#storytelling #lessons #experience`,
-};
+import type { UnicodeMap } from "./types";
 
 // Convert text to Unicode formatting
 export const convertToUnicode = (
@@ -66,6 +21,15 @@ export const convertToUnicodeUnderline = (text: string): string => {
   return text
     .split("")
     .map((char) => char + COMBINING_UNDERLINE)
+    .join("");
+};
+
+// Convert text to monospace Unicode
+const convertToCode = (text: string): string => {
+  const unicodeMap: UnicodeMap = UnicodeMapping;
+  return text
+    .split("")
+    .map((char) => unicodeMap["code"][char] || char)
     .join("");
 };
 
@@ -149,14 +113,55 @@ export const convertMarkdownToLinkedIn = (text: string): string => {
   // Convert bullet points
   converted = converted.replace(/^[\s]*[-*+]\s+(.*)$/gm, "• $1");
 
-  // Convert numbered lists
-  converted = converted.replace(
-    /^[\s]*\d+\.\s+(.*)$/gm,
-    (_, p1: string, offset: number, string: string) => {
-      const linesBefore = string.substring(0, offset).split("\n").length;
-      return `${linesBefore}. ${p1}`;
+  // Convert numbered lists with better spacing preservation
+  const numberedListRegex = /^[\s]*\d+\.\s+(.*)$/gm;
+  const lines = converted.split("\n");
+  let inNumberedList = false;
+  let listNumber = 1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const match = line.match(numberedListRegex);
+
+    if (match) {
+      // This is a numbered list item
+      if (!inNumberedList) {
+        // Starting a new list
+        listNumber = 1;
+        inNumberedList = true;
+      }
+
+      // Replace with correct numbering
+      lines[i] = line.replace(/^[\s]*\d+\./, `${listNumber}.`);
+      listNumber++;
+    } else if (line.trim() === "") {
+      // Empty line - keep as is, don't change list state
+      continue;
+    } else {
+      // Non-empty, non-numbered line - end the current list
+      inNumberedList = false;
+      listNumber = 1;
     }
-  );
+  }
+
+  converted = lines.join("\n");
+
+  // Convert quote blocks
+  // converted = converted.replace(/^> (.*)$/gm, (_, p1: string) => {
+  //   // Using decorative quote characters for LinkedIn
+  //   return `❝ ${p1} ❞`;
+  // });
+
+  // Multi-line quotes (optional - for block quotes)
+  converted = converted.replace(/^> (.*(?:\n> .*)*)$/gm, (_, p1: string) => {
+    const lines = p1.split("\n").map((line) => line.replace(/^> /, ""));
+    return `❝ ${lines.join("\n")} ❞`;
+  });
+
+  // Convert inline code
+  converted = converted.replace(/`([^`]+)`/g, (_, p1: string) => {
+    return `⟨${convertToCode(p1)}⟩`;
+  });
 
   // Convert links [text](url) to text (url)
   converted = converted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)");

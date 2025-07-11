@@ -14,9 +14,12 @@ import {
   Hash,
   Minus,
   Smile,
+  Quote,
+  Code,
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
-import { convertMarkdownToLinkedIn, sampleTemplates } from "../utils/helpers";
+import { sampleTemplates } from "../utils/templates";
+import { convertMarkdownToLinkedIn } from "../utils/helpers";
 import type { TemplateType, FormatType } from "../utils/types";
 
 const LinkedInTextFormatter: React.FC = () => {
@@ -131,6 +134,7 @@ const LinkedInTextFormatter: React.FC = () => {
           formattedText = "• Bullet point";
         }
         break;
+
       case "numbered":
         if (selectedText) {
           const lines = selectedText.split("\n").filter((line) => line.trim());
@@ -150,6 +154,31 @@ const LinkedInTextFormatter: React.FC = () => {
 
       case "emoji":
         setShowEmojiPicker(!showEmojiPicker);
+        break;
+
+      case "quote":
+        if (selectedText) {
+          const lines = selectedText.split("\n");
+          formattedText = lines
+            .map((line) => (line.trim() ? `> ${line.trim()}` : line))
+            .join("\n");
+        } else {
+          formattedText = "> Quote text";
+        }
+        break;
+
+      case "code":
+        if (selectedText) {
+          // For multi-line code blocks
+          if (selectedText.includes("\n")) {
+            formattedText = `\`\`\`\n${selectedText}\n\`\`\``;
+          } else {
+            // For inline code
+            formattedText = `\`${selectedText}\``;
+          }
+        } else {
+          formattedText = "`code`";
+        }
         break;
 
       default:
@@ -252,15 +281,15 @@ const LinkedInTextFormatter: React.FC = () => {
           <div className="inline-flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full mb-4">
             <Sparkles size={20} className="text-blue-600" />
             <span className="text-blue-700 font-medium">
-              LinkedIn Text Formatter
+              LinkedIn Post Formatter
             </span>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            LinkedIn Post Formatter
+            Create Stunning LinkedIn Posts
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Transform your plain text and markdown into eye-catching LinkedIn
-            posts with Unicode formatting
+            Transform plain text into powerful, formatted LinkedIn content that
+            stands out and drives engagement
           </p>
         </div>
 
@@ -345,6 +374,24 @@ const LinkedInTextFormatter: React.FC = () => {
                     title="Numbered List"
                   >
                     <Hash size={18} className="text-gray-700" />
+                  </button>
+
+                  <div className="w-px h-6 bg-gray-300 mx-2"></div>
+
+                  <button
+                    onClick={() => insertFormatting("quote")}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                    title="Quote Block"
+                  >
+                    <Quote size={18} className="text-gray-700" />
+                  </button>
+
+                  <button
+                    onClick={() => insertFormatting("code")}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                    title="Code Block"
+                  >
+                    <Code size={18} className="text-gray-700" />
                   </button>
 
                   <div className="w-px h-6 bg-gray-300 mx-2"></div>

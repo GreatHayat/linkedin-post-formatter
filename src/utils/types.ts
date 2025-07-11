@@ -12,7 +12,9 @@ export type FormatType =
   | "numbered"
   | "strikethrough"
   | "emoji"
-  | "caseConverter";
+  | "caseConverter"
+  | "quote"
+  | "code";
 
 export interface UnicodeCharMap {
   [key: string]: string;
@@ -23,4 +25,5 @@ export interface UnicodeMap {
   italic: UnicodeCharMap;
   underline: UnicodeCharMap;
   strikethrough: UnicodeCharMap;
+  code: UnicodeCharMap;
 }
