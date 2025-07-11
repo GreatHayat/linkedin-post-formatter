@@ -2,7 +2,7 @@
 
 Transform your plain text or markdown into **visually engaging LinkedIn posts** with professional Unicode formatting — **instantly and effortlessly.**
 
-<img width="1440" height="812" alt="Screenshot 2025-07-11 at 7 30 20 AM" src="https://github.com/user-attachments/assets/62260d27-d974-4cc3-96a7-771742c9da7c" />
+<img width="1440" height="813" alt="Screenshot 2025-07-11 at 8 58 29 AM" src="https://github.com/user-attachments/assets/5057c7e2-f074-4347-a8ea-3fb4216f2817" />
 
 
 ## ✨ Why Use This Tool?
