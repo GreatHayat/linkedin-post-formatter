@@ -74,86 +74,68 @@ export const convertMarkdownToLinkedIn = (text: string): string => {
   let converted = text;
 
   // Convert headers to bold
-  converted = converted.replace(/^### (.*$)/gm, (match: string, p1: string) =>
+  converted = converted.replace(/^### (.*$)/gm, (_, p1: string) =>
     convertToUnicode(p1, "bold")
   );
-  converted = converted.replace(/^## (.*$)/gm, (match: string, p1: string) =>
+  converted = converted.replace(/^## (.*$)/gm, (_, p1: string) =>
     convertToUnicode(p1, "bold")
   );
-  converted = converted.replace(/^# (.*$)/gm, (match: string, p1: string) =>
+  converted = converted.replace(/^# (.*$)/gm, (_, p1: string) =>
     convertToUnicode(p1, "bold")
   );
 
   // Handle combinations first (order matters!)
   // Bold + Italic + Strikethrough: ***~~text~~***
-  converted = converted.replace(
-    /\*\*\*~~(.*?)~~\*\*\*/g,
-    (match: string, p1: string) => {
-      let result = convertToUnicode(p1, "bold");
-      result = convertToUnicode(result, "italic");
-      return convertToUnicode(result, "strikethrough");
-    }
-  );
+  converted = converted.replace(/\*\*\*~~(.*?)~~\*\*\*/g, (_, p1: string) => {
+    let result = convertToUnicode(p1, "bold");
+    result = convertToUnicode(result, "italic");
+    return convertToUnicode(result, "strikethrough");
+  });
 
   // Bold + Italic: ***text***
-  converted = converted.replace(
-    /\*\*\*(.*?)\*\*\*/g,
-    (match: string, p1: string) => {
-      const result = convertToUnicode(p1, "bold");
-      return convertToUnicode(result, "italic");
-    }
-  );
+  converted = converted.replace(/\*\*\*(.*?)\*\*\*/g, (_, p1: string) => {
+    const result = convertToUnicode(p1, "bold");
+    return convertToUnicode(result, "italic");
+  });
 
   // Bold + Italic: **_text_**
-  converted = converted.replace(
-    /\*\*_(.*?)_\*\*/g,
-    (match: string, p1: string) => {
-      const result = convertToUnicode(p1, "bold");
-      return convertToUnicode(result, "italic");
-    }
-  );
+  converted = converted.replace(/\*\*_(.*?)_\*\*/g, (_, p1: string) => {
+    const result = convertToUnicode(p1, "bold");
+    return convertToUnicode(result, "italic");
+  });
 
   // Bold + Italic: *__text__*
-  converted = converted.replace(
-    /\*__(.*?)__\*/g,
-    (match: string, p1: string) => {
-      const result = convertToUnicode(p1, "bold");
-      return convertToUnicode(result, "italic");
-    }
-  );
+  converted = converted.replace(/\*__(.*?)__\*/g, (_, p1: string) => {
+    const result = convertToUnicode(p1, "bold");
+    return convertToUnicode(result, "italic");
+  });
 
   // Bold + Strikethrough: **~~text~~**
-  converted = converted.replace(
-    /\*\*~~(.*?)~~\*\*/g,
-    (match: string, p1: string) => {
-      const result = convertToUnicode(p1, "bold");
-      return convertToUnicode(result, "strikethrough");
-    }
-  );
+  converted = converted.replace(/\*\*~~(.*?)~~\*\*/g, (_, p1: string) => {
+    const result = convertToUnicode(p1, "bold");
+    return convertToUnicode(result, "strikethrough");
+  });
 
   // Italic + Strikethrough: *~~text~~*
-  converted = converted.replace(
-    /\*~~(.*?)~~\*/g,
-    (match: string, p1: string) => {
-      const result = convertToUnicode(p1, "italic");
-      return convertToUnicode(result, "strikethrough");
-    }
-  );
+  converted = converted.replace(/\*~~(.*?)~~\*/g, (_, p1: string) => {
+    const result = convertToUnicode(p1, "italic");
+    return convertToUnicode(result, "strikethrough");
+  });
 
   // Process strikethrough BEFORE underline to avoid conflicts
   // Convert strikethrough markdown ~~text~~ to Unicode strikethrough
-  converted = converted.replace(/~~(.*?)~~/g, (match: string, p1: string) =>
+  converted = converted.replace(/~~(.*?)~~/g, (_, p1: string) =>
     convertToUnicode(p1, "strikethrough")
   );
 
   // Single formatting
   // Convert bold markdown **text** to Unicode bold
-  converted = converted.replace(/\*\*(.*?)\*\*/g, (match: string, p1: string) =>
+  converted = converted.replace(/\*\*(.*?)\*\*/g, (_, p1: string) =>
     convertToUnicode(p1, "bold")
   );
 
   // Convert italic markdown *text* to Unicode italic
-  converted = converted.replace(/\*(.*?)\*/g, (match: string, p1: string) =>
+  converted = converted.replace(/\*(.*?)\*/g, (_, p1: string) =>
     convertToUnicode(p1, "italic")
   );
 
@@ -161,7 +143,7 @@ export const convertMarkdownToLinkedIn = (text: string): string => {
   // Use a more specific pattern to avoid conflicts
   converted = converted.replace(
     /(?<!\w)_((?:[^_]|__)+?)_(?!\w)/g,
-    (match: string, p1: string) => convertToUnicodeUnderline(p1)
+    (_, p1: string) => convertToUnicodeUnderline(p1)
   );
 
   // Convert bullet points
@@ -170,7 +152,7 @@ export const convertMarkdownToLinkedIn = (text: string): string => {
   // Convert numbered lists
   converted = converted.replace(
     /^[\s]*\d+\.\s+(.*)$/gm,
-    (match: string, p1: string, offset: number, string: string) => {
+    (_, p1: string, offset: number, string: string) => {
       const linesBefore = string.substring(0, offset).split("\n").length;
       return `${linesBefore}. ${p1}`;
     }
